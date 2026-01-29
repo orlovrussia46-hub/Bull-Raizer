@@ -39,6 +39,10 @@ body {
   font-size: .9rem;
 }
 
+.logo {
+  font-size: 1.1rem;
+}
+
 /* PRELOADER */
 #preloader {
   position: fixed;
@@ -161,9 +165,19 @@ body {
 .socials a {
   display: inline-block;
   margin: 10px;
+  padding: 12px 22px;
+  border: 1px solid #00ff9c;
+  border-radius: 30px;
   color: #00ff9c;
   text-decoration: none;
-  font-size: 1.1rem;
+  box-shadow: 0 0 15px rgba(0,255,156,.4);
+  transition: all .3s ease;
+}
+
+.socials a:hover {
+  background: #00ff9c;
+  color: black;
+  box-shadow: 0 0 30px #00ff9c;
 }
 
 /* FOOTER */
@@ -216,45 +230,18 @@ footer {
   opacity: 1;
   transform: translateY(0);
 }
-.socials a {
-  padding: 12px 22px;
-  border: 1px solid #00ff9c;
-  border-radius: 30px;
-  box-shadow: 0 0 15px rgba(0,255,156,.4);
-  transition: all .3s ease;
-}
-
-.socials a:hover {
-  background: #00ff9c;
-  color: black;
-  box-shadow: 0 0 30px #00ff9c;
-}
-
-.logo {
-  font-size: 1.1rem;
-}
-
 </style>
 </head>
 
 <body>
+
 <nav class="nav">
   <div class="logo neon">BullRaizer</div>
-
-  <div class="nav-links">
+  <div>
     <a href="#tokenomics">Tokenomics</a>
     <a href="#roadmap">Roadmap</a>
     <a href="#gallery">Gallery</a>
     <a href="#socials">Socials</a>
-    <a href="#buy">Buy</a>
-  </div>
-</nav>
-
-<nav class="nav">
-  <div class="logo">BullRaizer</div>
-  <div>
-    <a href="#tokenomics">Tokenomics</a>
-    <a href="#roadmap">Roadmap</a>
     <a href="#buy">Buy</a>
   </div>
 </nav>
@@ -271,33 +258,17 @@ footer {
 
   <img src="assets/bull.png" class="bull">
 
-  <!-- Якорь для кнопки Buy -->
-  <a id="buy"></a>
+  <div id="buy"></div>
 
-  <!-- Buy -->
-  <a href="https://jup.ag" class="buy-btn">
+  <a href="https://jup.ag" class="buy-btn" id="buyBtn">
     BUY ON SOLANA DEX
   </a>
 
-  <!-- Phantom -->
-  <button id="connectWallet" class="buy-btn" style="margin-left:10px;">
+  <a href="#" id="connectWallet" class="buy-btn" style="margin-left:10px;">
     CONNECT PHANTOM
-  </button>
+  </a>
 
-  <!-- Wallet text -->
-  <p id="walletAddress"
-     style="margin-top:15px; font-size:.75rem; opacity:.7;">
-  </p>
-</div>
-
-
-<div class="section">
-  <h2 class="neon">Live Status</h2>
-  <div class="cards">
-    <div class="card">Price<br>$0.0000</div>
-    <div class="card">Holders<br>—</div>
-    <div class="card">Liquidity<br>—</div>
-  </div>
+  <p id="walletAddress" style="margin-top:15px; font-size:.75rem; opacity:.7;"></p>
 </div>
 
 <div class="section" id="gallery">
@@ -338,16 +309,9 @@ footer {
 
 <div class="section socials" id="socials">
   <h2 class="neon">Join the Herd</h2>
-
-  <a href="https://t.me/BullRaizer" target="_blank" rel="noopener">
-    Telegram
-  </a>
-
-  <a href="https://x.com/BullRaizer" target="_blank" rel="noopener">
-    X (Twitter)
-  </a>
+  <a href="https://t.me/BullRaizer" target="_blank">Telegram</a>
+  <a href="https://x.com/BullRaizer" target="_blank">X (Twitter)</a>
 </div>
-
 
 </div>
 
@@ -357,9 +321,14 @@ footer {
 </footer>
 
 <script>
+window.addEventListener('load', () => {
+  const preloader = document.getElementById('preloader');
+  if (preloader) preloader.style.display = 'none';
+});
+
 const slash = document.getElementById('slash');
 const bull = document.querySelector('.bull');
-const buyBtn = document.querySelector('.buy-btn');
+const buyBtn = document.getElementById('buyBtn');
 
 function triggerSlash(){
   slash.classList.remove('slash-active');
@@ -381,53 +350,38 @@ if (buyBtn) {
   });
 }
 
-// ===== SCROLL REVEAL =====
+// SCROLL REVEAL
 const reveals = document.querySelectorAll('.reveal');
-
 function revealOnScroll() {
   reveals.forEach(el => {
-    const top = el.getBoundingClientRect().top;
-    const trigger = window.innerHeight * 0.85;
-    if (top < trigger) el.classList.add('active');
+    if (el.getBoundingClientRect().top < window.innerHeight * 0.85) {
+      el.classList.add('active');
+    }
   });
 }
-
 window.addEventListener('scroll', revealOnScroll);
 revealOnScroll();
 
-// ===== PHANTOM WALLET =====
+// PHANTOM WALLET
 const connectBtn = document.getElementById('connectWallet');
 const walletText = document.getElementById('walletAddress');
 
 async function connectPhantom() {
   if (!window.solana || !window.solana.isPhantom) {
-    alert("Install Phantom Wallet");
     window.open("https://phantom.app/", "_blank");
     return;
   }
-
   try {
     const resp = await window.solana.connect();
-    const address = resp.publicKey.toString();
-
-    walletText.innerText =
-      "Connected: " +
-      address.slice(0,4) +
-      "..." +
-      address.slice(-4);
-
-    connectBtn.innerText = "CONNECTED";
+    const addr = resp.publicKey.toString();
+    walletText.textContent = "Connected: " + addr.slice(0,4) + "..." + addr.slice(-4);
+    connectBtn.textContent = "CONNECTED";
     connectBtn.style.opacity = "0.6";
-  } catch (e) {
-    console.log("Connection rejected");
-  }
+  } catch {}
 }
 
-if (connectBtn) {
-  connectBtn.addEventListener('click', connectPhantom);
-}
+if (connectBtn) connectBtn.addEventListener('click', connectPhantom);
 </script>
-
 
 </body>
 </html>
