@@ -375,14 +375,4 @@ async function connectPhantom() {
   try {
     const resp = await window.solana.connect();
     const addr = resp.publicKey.toString();
-    walletText.textContent = "Connected: " + addr.slice(0,4) + "..." + addr.slice(-4);
-    connectBtn.textContent = "CONNECTED";
-    connectBtn.style.opacity = "0.6";
-  } catch {}
-}
-
-if (connectBtn) connectBtn.addEventListener('click', connectPhantom);
-</script>
-
-</body>
-</html>
+    walletText.textContent = "
